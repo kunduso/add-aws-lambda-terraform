@@ -18,3 +18,8 @@ variable "secret_key" {
   sensitive   = true
   default     = ""
 }
+variable "name" {
+  description = "The name of the application."
+  type        = string
+  default     = "app-7"
+}

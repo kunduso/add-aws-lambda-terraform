@@ -33,3 +33,6 @@ override.tf.json
 .terraformrc
 terraform.rc
 .terraform.lock.hcl
+
+# Ignore zip file generated as part of testing the python function
+*.zip

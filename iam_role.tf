@@ -1,6 +1,6 @@
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role
 resource "aws_iam_role" "lambda_role" {
-  name = "${var.name}_lambda_role"
+  name = "${var.name}-lambda-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -18,7 +18,7 @@ resource "aws_iam_role" "lambda_role" {
 
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy
 resource "aws_iam_policy" "lambda_policy" {
-  name        = "${var.name}_lambda_policy"
+  name        = "${var.name}-lambda-policy"
   path        = "/"
   description = "AWS IAM policy for the lambda role."
   policy = jsonencode({

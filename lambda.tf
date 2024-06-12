@@ -16,6 +16,13 @@ resource "aws_lambda_function" "lambda_run" {
     log_group        = aws_cloudwatch_log_group.lambda_log.name
     system_log_level = "INFO"
   }
+  environment {
+    variables = {
+      parameter_name  = aws_ssm_parameter.parameter.name
+      log_group_name  = aws_cloudwatch_log_group.lambda_log.name
+      log_stream_name = aws_cloudwatch_log_stream.log_stream.name
+    }
+  }
 }
 
 resource "aws_cloudwatch_event_rule" "lambda_trigger" {

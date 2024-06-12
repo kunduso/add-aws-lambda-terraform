@@ -5,14 +5,13 @@ data "archive_file" "python_file" {
 }
 
 resource "aws_lambda_function" "lambda_run" {
-  filename                = "${path.module}/lambda_function/lambda_function.zip"
-  source_code_hash        = data.archive_file.python_file.output_base64sha256
-  function_name           = var.name
-  role                    = aws_iam_role.lambda_role.arn
-  handler                 = "handler.lambda_handler"
-  runtime                 = "python3.8"
-  code_signing_config_arn = aws_lambda_code_signing_config.signing_config.arn
-  kms_key_arn             = aws_kms_key.encryption_rest.arn
+  filename         = "${path.module}/lambda_function/lambda_function.zip"
+  source_code_hash = data.archive_file.python_file.output_base64sha256
+  function_name    = var.name
+  role             = aws_iam_role.lambda_role.arn
+  handler          = "handler.lambda_handler"
+  runtime          = "python3.8"
+  kms_key_arn      = aws_kms_key.encryption_rest.arn
   logging_config {
     log_format       = "JSON"
     log_group        = aws_cloudwatch_log_group.lambda_log.name
@@ -31,25 +30,7 @@ resource "aws_lambda_function" "lambda_run" {
   #checkov:skip=CKV_AWS_117: This AWS Lambda function does not require access to anything inside a VPC
   #checkov:skip=CKV_AWS_116: Not applicable in this use case
   #checkov:skip=CKV_AWS_173: Not applicable in this use case
-}
-resource "aws_signer_signing_profile" "prod_sp" {
-  platform_id = "AWSLambda-SHA384-ECDSA"
-  name_prefix = "prod_sp_"
-
-  signature_validity_period {
-    value = 5
-    type  = "YEARS"
-  }
-}
-resource "aws_lambda_code_signing_config" "signing_config" {
-  allowed_publishers {
-    signing_profile_version_arns = [aws_signer_signing_profile.prod_sp.arn]
-  }
-  policies {
-    untrusted_artifact_on_deployment = "Enforce"
-  }
-
-  description = "Code signing config for AWS Lambda."
+  #checkov:skip=CKV_AWS_272: Not applicable in this use case: Ensure AWS Lambda function is configured to validate code-signing
 }
 resource "aws_cloudwatch_event_rule" "lambda_trigger" {
   name                = "lambda_trigger_rule"

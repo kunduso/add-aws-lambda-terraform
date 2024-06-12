@@ -23,3 +23,8 @@ variable "name" {
   type        = string
   default     = "app-7"
 }
+variable "log_group_prefix" {
+  description = "The name of the log group."
+  type        = string
+  default     = "/aws/lambda/"
+}

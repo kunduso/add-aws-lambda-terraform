@@ -35,7 +35,6 @@ resource "aws_iam_policy" "lambda_policy" {
       {
         Effect = "Allow",
         Action = [
-          "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ],
@@ -52,6 +51,7 @@ resource "aws_iam_policy" "lambda_policy" {
   })
 }
 
+#https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment
 resource "aws_iam_role_policy_attachment" "lambda_policy_attachement" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = aws_iam_policy.lambda_policy.arn

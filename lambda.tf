@@ -32,7 +32,6 @@ resource "aws_lambda_function" "lambda_run" {
   reserved_concurrent_executions = 5
   #checkov:skip=CKV_AWS_50: Not applicable in this use case: X-Ray tracing is enabled for Lambda
   #checkov:skip=CKV_AWS_117: This AWS Lambda function does not require access to anything inside a VPC
-  #checkov:skip=CKV_AWS_173: Not applicable in this use case
   #checkov:skip=CKV_AWS_272: Not applicable in this use case: Ensure AWS Lambda function is configured to validate code-signing
 }
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule

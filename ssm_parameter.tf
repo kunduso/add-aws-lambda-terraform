@@ -2,6 +2,6 @@
 resource "aws_ssm_parameter" "parameter" {
   name   = "/${var.name}"
   type   = "SecureString"
-  key_id = aws_kms_key.encryption_rest.id
+  key_id = aws_kms_key.encryption.id
   value  = "1234567890"
 }

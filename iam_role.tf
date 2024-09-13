@@ -41,11 +41,19 @@ resource "aws_iam_policy" "lambda_policy" {
         Resource = [local.cloudwatch_log_group_arn]
       },
       {
+        Effect = "Allow"
+        Action = [
+          "sqs:SendMessage",
+          "sqs:GetQueueAttributes"
+        ]
+        Resource = aws_sqs_queue.dlq.arn
+      },
+      {
         Effect = "Allow",
         Action = [
           "kms:Decrypt"
         ]
-        Resource = [aws_kms_key.encryption_rest.arn]
+        Resource = [aws_kms_key.encryption.arn]
       }
     ]
   })

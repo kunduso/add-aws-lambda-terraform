@@ -28,3 +28,13 @@ variable "log_group_prefix" {
   type        = string
   default     = "/aws/lambda/"
 }
+variable "vpc_cidr" {
+  description = "The CIDR of the VPC."
+  type        = string
+  default     = "12.25.15.0/25"
+}
+variable "subnet_cidr_private" {
+  description = "The CIDR blocks for the private subnets."
+  type        = list(any)
+  default     = ["12.25.15.0/27", "12.25.15.32/27", "12.25.15.64/27", "12.25.15.96/27"]
+}

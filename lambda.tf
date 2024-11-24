@@ -18,6 +18,10 @@ resource "aws_lambda_function" "lambda_run" {
     log_group        = aws_cloudwatch_log_group.lambda_log.name
     system_log_level = "INFO"
   }
+  vpc_config {
+    subnet_ids         = [for subnet in module.vpc.private_subnets : subnet.id]
+    security_group_ids = [aws_security_group.lambda.id]
+  }
   environment {
     variables = {
       parameter_name  = aws_ssm_parameter.parameter.name
@@ -31,7 +35,6 @@ resource "aws_lambda_function" "lambda_run" {
   }
   reserved_concurrent_executions = 5
   #checkov:skip=CKV_AWS_50: Not applicable in this use case: X-Ray tracing is enabled for Lambda
-  #checkov:skip=CKV_AWS_117: This AWS Lambda function does not require access to anything inside a VPC
   #checkov:skip=CKV_AWS_272: Not applicable in this use case: Ensure AWS Lambda function is configured to validate code-signing
 }
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule

@@ -4,6 +4,6 @@ terraform {
     encrypt     = true
     key         = "tf/add-aws-lambda-terraform/terraform.tfstate"
     region      = "us-east-2"
-    use_lockfile = true
+    use_lockfile=true
   }
 }

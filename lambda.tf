@@ -11,7 +11,7 @@ resource "aws_lambda_function" "lambda_run" {
   function_name    = var.name
   role             = aws_iam_role.lambda_role.arn
   handler          = "handler.lambda_handler"
-  runtime          = "python3.8"
+  runtime          = "python3.12"
   kms_key_arn      = aws_kms_key.encryption.arn
   logging_config {
     log_format       = "JSON"

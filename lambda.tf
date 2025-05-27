@@ -11,7 +11,7 @@ resource "aws_lambda_function" "lambda_run" {
   function_name    = var.name
   role             = aws_iam_role.lambda_role.arn
   handler          = "handler.lambda_handler"
-  runtime          = "python3.8"
+  runtime          = "python3.12"
   kms_key_arn      = aws_kms_key.encryption.arn
   logging_config {
     log_format       = "JSON"
@@ -33,9 +33,9 @@ resource "aws_lambda_function" "lambda_run" {
   dead_letter_config {
     target_arn = aws_sqs_queue.dlq.arn
   }
+  code_signing_config_arn        = aws_lambda_code_signing_config.configuration.arn
   reserved_concurrent_executions = 5
   #checkov:skip=CKV_AWS_50: Not applicable in this use case: X-Ray tracing is enabled for Lambda
-  #checkov:skip=CKV_AWS_272: Not applicable in this use case: Ensure AWS Lambda function is configured to validate code-signing
 }
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule
 resource "aws_cloudwatch_event_rule" "lambda_trigger" {

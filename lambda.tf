@@ -4,9 +4,18 @@ data "archive_file" "python_file" {
   source_dir  = "${path.module}/lambda_function/"
   output_path = "${path.module}/lambda_function/lambda_function.zip"
 }
+#https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_object
+#Upload Lambda code to source S3 bucket
+resource "aws_s3_object" "lambda_zip" {
+  bucket = aws_s3_bucket.lambda_source.bucket
+  key    = "lambda_function.zip"
+  source = data.archive_file.python_file.output_path
+  etag   = filemd5(data.archive_file.python_file.output_path)
+}
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function
 resource "aws_lambda_function" "lambda_run" {
-  filename         = "${path.module}/lambda_function/lambda_function.zip"
+  s3_bucket        = aws_s3_bucket.lambda_destination.bucket
+  s3_key           = "lambda_function_signed.zip"
   source_code_hash = data.archive_file.python_file.output_base64sha256
   function_name    = var.name
   role             = aws_iam_role.lambda_role.arn
@@ -36,6 +45,7 @@ resource "aws_lambda_function" "lambda_run" {
   code_signing_config_arn        = aws_lambda_code_signing_config.configuration.arn
   reserved_concurrent_executions = 5
   #checkov:skip=CKV_AWS_50: Not applicable in this use case: X-Ray tracing is enabled for Lambda
+  # Ensure Lambda function is created after the code signing process
   depends_on = [null_resource.sign_lambda_code]
 }
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule

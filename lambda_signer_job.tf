@@ -5,9 +5,9 @@ resource "null_resource" "sign_lambda_code" {
     aws_signer_signing_profile.lambda_signing_profile
   ]
 
-  # Use standard shell for Linux
+  # Use local-exec with interpreter for OS-agnostic execution
   provisioner "local-exec" {
-    command = "aws signer start-signing-job --source s3=bucket=${var.name}-lambda-code,key=lambda_function.zip --destination s3=bucket=${var.name}-lambda-code,key=lambda_function_signed.zip --profile-name ${aws_signer_signing_profile.lambda_signing_profile.name}"
+    command = "aws signer start-signing-job --source file://${path.module}/lambda_function/lambda_function.zip --destination file://${path.module}/lambda_function/lambda_function_signed.zip --profile-name ${aws_signer_signing_profile.lambda_signing_profile.name}"
   }
 
   triggers = {

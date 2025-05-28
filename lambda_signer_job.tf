@@ -28,12 +28,12 @@ resource "aws_s3_bucket_versioning" "lambda_destination" {
 }
 #https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource
 # Sign the Lambda function code using AWS Signer
-#https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource
-# Sign the Lambda function code using AWS Signer
 resource "null_resource" "sign_lambda_code" {
   depends_on = [
     aws_s3_object.lambda_zip,
-    aws_signer_signing_profile.lambda_signing_profile
+    aws_signer_signing_profile.lambda_signing_profile,
+    aws_s3_bucket.lambda_source,
+    aws_s3_bucket.lambda_destination
   ]
 
   # Use AWS Signer with S3 source and destination - correct syntax

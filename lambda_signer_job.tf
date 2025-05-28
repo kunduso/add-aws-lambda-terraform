@@ -38,7 +38,7 @@ resource "null_resource" "sign_lambda_code" {
 
   # Use AWS Signer with S3 source and destination - correct syntax
   provisioner "local-exec" {
-    
+
     command = <<EOT
       # Get the version ID of the uploaded object
       VERSION_ID=$(aws s3api list-object-versions --bucket ${aws_s3_bucket.lambda_source.bucket} --prefix lambda_function.zip --query 'Versions[0].VersionId' --output text)
@@ -62,6 +62,8 @@ resource "null_resource" "sign_lambda_code" {
         echo "Files in destination bucket:"
         aws s3 ls s3://${aws_s3_bucket.lambda_destination.bucket} --recursive
       fi
+      # Save the job ID to a file for reference
+      echo "$JOB_ID" > signing_job_id.txt
     EOT
   }
 

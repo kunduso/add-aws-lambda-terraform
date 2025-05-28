@@ -1,7 +1,7 @@
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket
 # Create S3 bucket for Lambda source code
 resource "aws_s3_bucket" "lambda_source" {
-  bucket_prefix = "${var.name}-lambda-source-${data.aws_caller_identity.current.account_id}"
+  bucket        = "${var.name}-lambda-source-${data.aws_caller_identity.current.account_id}"
   force_destroy = true
 }
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning
@@ -15,7 +15,7 @@ resource "aws_s3_bucket_versioning" "lambda_source" {
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket
 # Create S3 bucket for Lambda source code
 resource "aws_s3_bucket" "lambda_destination" {
-  bucket_prefix = "${var.name}-lambda-destination-${data.aws_caller_identity.current.account_id}"
+  bucket        = "${var.name}-lambda-destination-${data.aws_caller_identity.current.account_id}"
   force_destroy = true
 }
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning
@@ -38,7 +38,21 @@ resource "null_resource" "sign_lambda_code" {
 
   # Use AWS Signer with S3 source and destination - correct syntax
   provisioner "local-exec" {
-    command = "aws signer start-signing-job --source '{\"s3\":{\"bucketName\":\"${aws_s3_bucket.lambda_source.bucket}\",\"key\":\"lambda_function.zip\",\"version\":\"null\"}}' --destination '{\"s3\":{\"bucketName\":\"${aws_s3_bucket.lambda_destination.bucket}\",\"prefix\":\"lambda_function_signed.zip\"}}' --profile-name ${aws_signer_signing_profile.lambda_signing_profile.name}"
+    command = <<EOT
+      JOB_ID=$(aws signer start-signing-job \
+        --source '{"s3":{"bucketName":"${aws_s3_bucket.lambda_source.bucket}","key":"lambda_function.zip","version":"null"}}' \
+        --destination '{"s3":{"bucketName":"${aws_s3_bucket.lambda_destination.bucket}","prefix":""}}' \
+        --profile-name ${aws_signer_signing_profile.lambda_signing_profile.name} \
+        --query 'jobId' --output text)
+      
+      echo "Signing job ID: $JOB_ID"
+      
+      # Wait for job to complete
+      aws signer wait successful-signing-job --job-id $JOB_ID
+      
+      # List files in destination bucket
+      aws s3 ls s3://${aws_s3_bucket.lambda_destination.bucket} --recursive
+    EOT
   }
 
   triggers = {

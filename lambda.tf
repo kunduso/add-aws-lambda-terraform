@@ -36,7 +36,7 @@ resource "aws_lambda_function" "lambda_run" {
   code_signing_config_arn        = aws_lambda_code_signing_config.configuration.arn
   reserved_concurrent_executions = 5
   #checkov:skip=CKV_AWS_50: Not applicable in this use case: X-Ray tracing is enabled for Lambda
-  depends_on       = [null_resource.sign_lambda_code]
+  depends_on = [null_resource.sign_lambda_code]
 }
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule
 resource "aws_cloudwatch_event_rule" "lambda_trigger" {

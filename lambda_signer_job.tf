@@ -38,7 +38,7 @@ resource "null_resource" "sign_lambda_code" {
 
   # Use AWS Signer with S3 source and destination - correct syntax
   provisioner "local-exec" {
-    command = "aws signer start-signing-job --source '{\"s3\":{\"bucketName\":\"${aws_s3_bucket.lambda_source.bucket}\",\"key\":\"lambda_function.zip\"}}' --destination '{\"s3\":{\"bucketName\":\"${aws_s3_bucket.lambda_destination.bucket}\",\"key\":\"lambda_function_signed.zip\"}}' --profile-name ${aws_signer_signing_profile.lambda_signing_profile.name}"
+    command = "aws signer start-signing-job --source '{\"s3\":{\"bucketName\":\"${aws_s3_bucket.lambda_source.bucket}\",\"key\":\"lambda_function.zip\",\"version\":\"null\"}}' --destination '{\"s3\":{\"bucketName\":\"${aws_s3_bucket.lambda_destination.bucket}\",\"prefix\":\"lambda_function_signed.zip\"}}' --profile-name ${aws_signer_signing_profile.lambda_signing_profile.name}"
   }
 
   triggers = {

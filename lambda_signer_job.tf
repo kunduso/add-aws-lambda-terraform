@@ -38,20 +38,30 @@ resource "null_resource" "sign_lambda_code" {
 
   # Use AWS Signer with S3 source and destination - correct syntax
   provisioner "local-exec" {
+    
     command = <<EOT
+      # Get the version ID of the uploaded object
+      VERSION_ID=$(aws s3api list-object-versions --bucket ${aws_s3_bucket.lambda_source.bucket} --prefix lambda_function.zip --query 'Versions[0].VersionId' --output text)
+      
+      echo "Object version ID: $VERSION_ID"
+      
+      # Use the actual version ID in the signing job
       JOB_ID=$(aws signer start-signing-job \
-        --source '{"s3":{"bucketName":"${aws_s3_bucket.lambda_source.bucket}","key":"lambda_function.zip","version":"null"}}' \
-        --destination '{"s3":{"bucketName":"${aws_s3_bucket.lambda_destination.bucket}","prefix":""}}' \
+        --source '{"s3":{"bucketName":"${aws_s3_bucket.lambda_source.bucket}","key":"lambda_function.zip","version":"'$VERSION_ID'"}}' \
+        --destination '{"s3":{"bucketName":"${aws_s3_bucket.lambda_destination.bucket}","prefix":"signed/"}}' \
         --profile-name ${aws_signer_signing_profile.lambda_signing_profile.name} \
         --query 'jobId' --output text)
       
       echo "Signing job ID: $JOB_ID"
       
-      # Wait for job to complete
-      aws signer wait successful-signing-job --job-id $JOB_ID
-      
-      # List files in destination bucket
-      aws s3 ls s3://${aws_s3_bucket.lambda_destination.bucket} --recursive
+      # Wait for job to complete if we got a job ID
+      if [ ! -z "$JOB_ID" ]; then
+        aws signer wait successful-signing-job --job-id $JOB_ID
+        
+        # List files in destination bucket
+        echo "Files in destination bucket:"
+        aws s3 ls s3://${aws_s3_bucket.lambda_destination.bucket} --recursive
+      fi
     EOT
   }
 

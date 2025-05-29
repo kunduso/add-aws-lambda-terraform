@@ -37,6 +37,14 @@ resource "aws_s3_bucket_lifecycle_configuration" "lambda_source" {
   bucket = aws_s3_bucket.lambda_source.id
 
   rule {
+    id     = "abort-multipart-uploads"
+    status = "Enabled"
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 3
+    }
+  }
+  rule {
     id     = "cleanup-old-versions"
     status = "Enabled"
 
@@ -44,4 +52,5 @@ resource "aws_s3_bucket_lifecycle_configuration" "lambda_source" {
       noncurrent_days = 90
     }
   }
+
 }

@@ -3,6 +3,12 @@
 resource "aws_s3_bucket" "lambda_source" {
   bucket        = "${var.name}-lambda-source-${data.aws_caller_identity.current.account_id}"
   force_destroy = true
+  #checkov:skip=CKV_AWS_18: AWS Access logging not enabled on S3 buckets
+  #checkov:skip=CKV_AWS_144: Region replication not enabled on S3 bucket
+  #checkov:skip=CKV2_AWS_62: Ensure S3 buckets should have event notifications enabled
+  # These security controls are suppressed as this bucket is only used temporarily for Lambda code signing
+  # and is not intended for long-term storage or public access. The bucket has other security measures
+  # like encryption and public access blocking enabled.
 }
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning
 # Enable versioning on the source S3 bucket (required for signing)

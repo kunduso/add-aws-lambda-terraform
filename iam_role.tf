@@ -65,20 +65,6 @@ resource "aws_iam_policy" "lambda_policy" {
         Resource = [
           "${aws_s3_bucket.lambda_source.arn}/*"
         ]
-      },
-      # Add code signing verification permissions
-      {
-        Effect = "Allow",
-        Action = [
-          "lambda:GetCodeSigningConfig",
-          "lambda:GetFunctionCodeSigningConfig",
-          "lambda:VerifyCodeSignature",
-          "lambda:*",
-          "signer:GetSigningProfile",
-          "signer:DescribeSigningJob",
-          "signer:*"
-        ],
-        Resource = "*"
       }
     ]
   })

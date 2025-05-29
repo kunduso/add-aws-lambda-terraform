@@ -54,6 +54,17 @@ resource "aws_iam_policy" "lambda_policy" {
           "kms:Decrypt"
         ]
         Resource = [aws_kms_key.encryption.arn]
+      },
+      # Add S3 permissions for accessing signed code
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject",
+          "s3:GetObjectVersion"
+        ],
+        Resource = [
+          "${aws_s3_bucket.lambda_source.arn}/*"
+        ]
       }
     ]
   })

@@ -23,7 +23,7 @@ resource "aws_lambda_code_signing_config" "configuration" {
   policies {
     untrusted_artifact_on_deployment = "Enforce"
   }
-  description = "Code signing configuration for ${var.name} Lambda function"
+  description = "Code signing configuration for ${var.name} Lambda function."
 }
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/signer_signing_job
 resource "aws_signer_signing_job" "build_signing_job" {
